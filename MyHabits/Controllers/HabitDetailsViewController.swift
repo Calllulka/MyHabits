@@ -108,7 +108,6 @@ class HabitDetailsViewController: UIViewController {
     @objc func leftBarButton() {
         self.navigationController?.popViewController(animated: true)
     }
-
 }
 
 //    MARK: - Extension

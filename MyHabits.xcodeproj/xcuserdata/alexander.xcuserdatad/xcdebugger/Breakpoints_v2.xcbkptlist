@@ -46,8 +46,8 @@
             filePath = "MyHabits/Controllers/HabitViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "239"
-            endingLineNumber = "239"
+            startingLineNumber = "252"
+            endingLineNumber = "252"
             landmarkName = "editHabit()"
             landmarkType = "7">
          </BreakpointContent>

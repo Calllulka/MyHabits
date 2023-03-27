@@ -32,6 +32,12 @@ class HabitViewController: UIViewController {
         }
     }
     
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        return scroll
+    }()
+    
     private let labelName: UILabel = {
         let label = UILabel()
         label.text = "НАЗВАНИЕ"
@@ -154,45 +160,52 @@ class HabitViewController: UIViewController {
     }
     
     private func prepareView() {
-        view.addSubview(labelName)
-        view.addSubview(addHabitName)
-        view.addSubview(color)
-        view.addSubview(circle)
-        view.addSubview(time)
-        view.addSubview(addTime)
-        view.addSubview(dataPicker)
+        view.addSubview(scrollView)
+        scrollView.addSubview(labelName)
+        scrollView.addSubview(addHabitName)
+        scrollView.addSubview(color)
+        scrollView.addSubview(circle)
+        scrollView.addSubview(time)
+        scrollView.addSubview(addTime)
+        scrollView.addSubview(dataPicker)
         view.addSubview(habitDelete)
     }
     
     private func makeConstraints() {
         NSLayoutConstraint.activate([
         
-            labelName.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 21),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: habitDelete.topAnchor),
+            
+            labelName.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 21),
             labelName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             labelName.heightAnchor.constraint(equalToConstant: 18),
             
             addHabitName.topAnchor.constraint(equalTo: labelName.bottomAnchor, constant: 7),
-            addHabitName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addHabitName.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             
             color.topAnchor.constraint(equalTo: addHabitName.bottomAnchor, constant: 15),
-            color.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            color.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             
             circle.topAnchor.constraint(equalTo: color.bottomAnchor, constant: 7),
             circle.heightAnchor.constraint(equalToConstant: 30),
             circle.widthAnchor.constraint(equalToConstant: 30),
-            circle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            circle.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
             
             time.topAnchor.constraint(equalTo: circle.bottomAnchor, constant: 15),
-            time.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            time.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
         
             addTime.topAnchor.constraint(equalTo: time.bottomAnchor, constant: 7),
-            addTime.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            addTime.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
         
             dataPicker.topAnchor.constraint(equalTo: addTime.bottomAnchor, constant: 15),
-            dataPicker.widthAnchor.constraint(equalTo: view.widthAnchor),
+            dataPicker.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             dataPicker.heightAnchor.constraint(equalToConstant: 216),
+            dataPicker.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            habitDelete.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -18),
+            habitDelete.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -18),
             habitDelete.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }

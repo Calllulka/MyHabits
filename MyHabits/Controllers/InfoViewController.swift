@@ -149,6 +149,7 @@ class InfoViewController: UIViewController {
             sevenText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             sevenText.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
             sevenText.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+            
         ])
     }
 }
