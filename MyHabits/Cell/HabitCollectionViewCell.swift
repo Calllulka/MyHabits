@@ -20,7 +20,7 @@ protocol HabitCollectionViewCellDelegate: AnyObject {
     func habitDidPressedCheck(cell: HabitCollectionCell)
 }
 
-class HabitCollectionCell: UICollectionViewCell {
+final class HabitCollectionCell: UICollectionViewCell {
     
     //    MARK: - Property
     
@@ -124,7 +124,7 @@ class HabitCollectionCell: UICollectionViewCell {
         counter.text = "Счетчик: \(config.couner)"
     }
     
-    @objc func tapCheckMark() {
-        delegate?.habitDidPressedCheck(cell: self)
+    @objc private func tapCheckMark() {
+        self.delegate?.habitDidPressedCheck(cell: self)
     }
 }

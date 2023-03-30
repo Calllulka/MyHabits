@@ -11,7 +11,7 @@ protocol HabitDetailsViewControllerDelegate: AnyObject {
     func habitDetailsViewControllerHabitDidEdited()
 }
 
-class HabitDetailsViewController: UIViewController {
+final class HabitDetailsViewController: UIViewController {
     
     //    MARK: - Property
     
@@ -50,7 +50,7 @@ class HabitDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .myLightGray
-        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.largeTitleDisplayMode = .never
         addNavigationBar()
         prepareView()
         makeConstraints()
@@ -95,7 +95,7 @@ class HabitDetailsViewController: UIViewController {
         ])
     }
     
-    @objc func addHabitViewController() {
+    @objc private func addHabitViewController() {
         guard  let habit = habit else { return }
         let habitViewController = HabitViewController()
         let modalNavigationController = UINavigationController(rootViewController: habitViewController)
@@ -105,7 +105,7 @@ class HabitDetailsViewController: UIViewController {
         navigationController?.present(modalNavigationController, animated: true)
     }
     
-    @objc func leftBarButton() {
+    @objc private func leftBarButton() {
         self.navigationController?.popViewController(animated: true)
     }
 }

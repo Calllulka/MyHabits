@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		11AEEAE629C08ADC00440124 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AEEAE529C08ADC00440124 /* AppDelegate.swift */; };
-		11AEEAEA29C08ADC00440124 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AEEAE929C08ADC00440124 /* ViewController.swift */; };
 		11AEEAEF29C08AE700440124 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11AEEAEE29C08AE700440124 /* Assets.xcassets */; };
 		11AEEAF229C08AE700440124 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11AEEAF029C08AE700440124 /* LaunchScreen.storyboard */; };
 		11AEEAFC29C0900200440124 /* HabitsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AEEAFB29C0900200440124 /* HabitsStore.swift */; };
@@ -26,7 +25,6 @@
 /* Begin PBXFileReference section */
 		11AEEAE229C08ADC00440124 /* MyHabits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyHabits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11AEEAE529C08ADC00440124 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		11AEEAE929C08ADC00440124 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		11AEEAEE29C08AE700440124 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11AEEAF129C08AE700440124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		11AEEAF329C08AE700440124 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -76,7 +74,6 @@
 				11CC589829C0FFE900EE8179 /* Cell */,
 				11AEEAFE29C0907A00440124 /* Controllers */,
 				11AEEAE529C08ADC00440124 /* AppDelegate.swift */,
-				11AEEAE929C08ADC00440124 /* ViewController.swift */,
 				11AEEAEE29C08AE700440124 /* Assets.xcassets */,
 				11AEEAF029C08AE700440124 /* LaunchScreen.storyboard */,
 				11AEEAF329C08AE700440124 /* Info.plist */,
@@ -187,7 +184,6 @@
 				11CC58B629C5ED1600EE8179 /* TableViewCell.swift in Sources */,
 				11AEEAFC29C0900200440124 /* HabitsStore.swift in Sources */,
 				11CC58AC29C2143C00EE8179 /* Colors.swift in Sources */,
-				11AEEAEA29C08ADC00440124 /* ViewController.swift in Sources */,
 				11AEEAE629C08ADC00440124 /* AppDelegate.swift in Sources */,
 				11CC58B329C5E82400EE8179 /* HabitDetailsViewController.swift in Sources */,
 				11CC58B029C5934200EE8179 /* HabitCollectionViewCell.swift in Sources */,

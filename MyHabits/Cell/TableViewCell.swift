@@ -12,7 +12,7 @@ struct TableViewCellConfig {
     let isChecked: Bool
 }
 
-class TableViewCell: UITableViewCell {
+final class TableViewCell: UITableViewCell {
     
     //    MARK: - Property
     

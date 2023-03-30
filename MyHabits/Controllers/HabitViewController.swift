@@ -17,7 +17,7 @@ protocol HabitViewControllerDelegate: AnyObject {
     func habitViewControllerDeleteHabit(habit: Habit)
 }
 
-class HabitViewController: UIViewController {
+final class HabitViewController: UIViewController {
     
     //    MARK: - Property
     
@@ -150,12 +150,12 @@ class HabitViewController: UIViewController {
         navigationItem.leftBarButtonItem = leftButton
     }
     
-    @objc func tapRightButtonSave() {
+    @objc private func tapRightButtonSave() {
         screenType == .create ? saveHabit(): editHabit()
         dismiss(animated: true, completion: nil)
     }
     
-    @objc func tapLeftBarButton() {
+    @objc private func tapLeftBarButton() {
         dismiss(animated: true, completion: nil)
     }
     

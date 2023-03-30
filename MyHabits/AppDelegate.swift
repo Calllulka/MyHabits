@@ -8,7 +8,7 @@
 import UIKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
@@ -35,6 +35,7 @@ func createInfoViewController() -> UINavigationController {
     let infoViewController = InfoViewController()
     infoViewController.title = "Информация"
     infoViewController.tabBarItem = UITabBarItem(title: "Информация", image: UIImage(systemName: "info.circle.fill"), tag: 0)
+//    infoViewController.navigationItem.largeTitleDisplayMode = .never
     return UINavigationController(rootViewController: infoViewController)
 }
 

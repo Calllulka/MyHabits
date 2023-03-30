@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HabitsViewController: UIViewController {
+final class HabitsViewController: UIViewController {
     
     //    MARK: - Property
     
@@ -43,21 +43,16 @@ class HabitsViewController: UIViewController {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
-        
+
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = .myLightGray
         appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.black]
-        
+
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     //    MARK: - Functions
@@ -68,7 +63,7 @@ class HabitsViewController: UIViewController {
         navigationItem.rightBarButtonItem = barButton
     }
     
-    @objc func actionBarbutton() {
+    @objc private func actionBarbutton() {
         let habitViewController = HabitViewController()
         habitViewController.configurate(type: .create)
         let modalNavigationController = UINavigationController(rootViewController: habitViewController)
@@ -84,13 +79,12 @@ class HabitsViewController: UIViewController {
     }
     
     private func setupLayouts() {
-        let safeAreaGuide = view.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: safeAreaGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: safeAreaGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: safeAreaGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: safeAreaGuide.trailingAnchor)
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
 }
@@ -107,7 +101,7 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProgressCollectionCell.reuseId, for: indexPath) as? ProgressCollectionCell else {
                 return UICollectionViewCell()
             }
-            
+
             let progress = HabitsStore.shared.todayProgress
             let percent = Int(progress * 100)
             let config = ProgressCollectionCellConfig(percent: percent, progress: progress)
@@ -210,8 +204,16 @@ extension HabitsViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension HabitsViewController: HabitViewControllerDelegate {
+    
     func habitViewControllerDeleteHabit(habit: Habit) {
-        print(#function)
+//        guard
+//            let indexPath = collectionView.indexPath(for: habit),
+//            let habitIndex = HabitsStore.shared.habits.firstIndex(where: { $0 == habit })
+//        else {
+//            return
+//        }
+//        collectionView.deleteItems(at: [habitIndex])
+        collectionView.reloadData()
     }
     
     func habitViewControllerAddedOrEditedHabit() {
@@ -221,14 +223,21 @@ extension HabitsViewController: HabitViewControllerDelegate {
 
 extension HabitsViewController: HabitDetailsViewControllerDelegate {
     func habitDetailsViewControllerHabitDidEdited() {
-        collectionView.reloadData()
+        guard let cell = collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? HabitCollectionCell,
+              let cellIndex = collectionView.indexPath(for: cell) else { return }
+        collectionView.deleteItems(at: [cellIndex])
     }
 }
 
 extension HabitsViewController: HabitCollectionViewCellDelegate {
     
     func habitDidPressedCheck(cell: HabitCollectionCell) {
-        guard let indexPath = collectionView.indexPath(for: cell) else { return }
+        guard
+            let indexPath = collectionView.indexPath(for: cell),
+            let progressCell = self.collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? ProgressCollectionCell
+//            let progressIndex = collectionView.indexPath(for: progressCell)
+        else { return }
+        
         let habitIndex = indexPath.row - 1
         
         if dataSourse[habitIndex].isAlreadyTakenToday {
@@ -236,6 +245,14 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
         } else {
             HabitsStore.shared.track(dataSourse[habitIndex])
         }
+        
+        let progress = HabitsStore.shared.todayProgress
+        let percent = Int(progress * 100)
+        let config = ProgressCollectionCellConfig(percent: percent, progress: progress)
+        
+        progressCell.set(config: config)
+        
+//        collectionView.reloadItems(at: [progressIndex, indexPath])
         collectionView.reloadData()
     }
 }

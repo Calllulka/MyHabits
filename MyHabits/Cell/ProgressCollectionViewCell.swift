@@ -12,7 +12,7 @@ struct ProgressCollectionCellConfig {
     let progress: Float
 }
 
-class ProgressCollectionCell: UICollectionViewCell {
+final class ProgressCollectionCell: UICollectionViewCell {
     
 //    MARK: - Property
     
@@ -20,7 +20,7 @@ class ProgressCollectionCell: UICollectionViewCell {
     
     private let status: UILabel = {
        let status = UILabel()
-        status.tintColor = .systemGray
+        status.textColor = .mySystemGrey
         status.text = "Всё получится!"
         status.font = .footnoteStatus
         status.translatesAutoresizingMaskIntoConstraints = false
@@ -29,7 +29,7 @@ class ProgressCollectionCell: UICollectionViewCell {
     
     private var percent: UILabel = {
        var status = UILabel()
-        status.tintColor = .systemGray
+        status.textColor = .mySystemGrey
         status.text = "0%"
         status.font = .footnoteStatus
         status.textAlignment = .right
