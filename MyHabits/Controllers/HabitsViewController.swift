@@ -37,12 +37,12 @@ final class HabitsViewController: UIViewController {
         setupView()
         prepareView()
         setupLayouts()
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationItem.largeTitleDisplayMode = .always
-        navigationController?.navigationBar.prefersLargeTitles = true
 
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = .myLightGray
@@ -82,9 +82,9 @@ final class HabitsViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
 }
@@ -101,11 +101,8 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProgressCollectionCell.reuseId, for: indexPath) as? ProgressCollectionCell else {
                 return UICollectionViewCell()
             }
-
-            let progress = HabitsStore.shared.todayProgress
-            let percent = Int(progress * 100)
-            let config = ProgressCollectionCellConfig(percent: percent, progress: progress)
-            cell.set(config: config)
+            
+            cell.setProgress(progress: HabitsStore.shared.todayProgress)
             return cell
             
         } else {
@@ -129,6 +126,7 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             
             cell.set(config: config)
             cell.delegate = self
+//            cell.cellChenge = self
             return cell
         }
     }
@@ -205,27 +203,21 @@ extension HabitsViewController: UICollectionViewDelegateFlowLayout {
 
 extension HabitsViewController: HabitViewControllerDelegate {
     
-    func habitViewControllerDeleteHabit(habit: Habit) {
-//        guard
-//            let indexPath = collectionView.indexPath(for: habit),
-//            let habitIndex = HabitsStore.shared.habits.firstIndex(where: { $0 == habit })
-//        else {
-//            return
-//        }
-//        collectionView.deleteItems(at: [habitIndex])
-        collectionView.reloadData()
+    func habitViewControllerAddedOrEditedHabit(habitIndex: Int) {
+        let indexPath = IndexPath(item: habitIndex, section: 0)
+        collectionView.insertItems(at: [indexPath])
     }
-    
-    func habitViewControllerAddedOrEditedHabit() {
-        collectionView.reloadData()
+
+    func habitViewControllerDeleteHabit(habitIndex: Int) {
+        let indexPath = IndexPath(item: habitIndex, section: 0)
+        collectionView.deleteItems(at: [indexPath])
     }
 }
 
 extension HabitsViewController: HabitDetailsViewControllerDelegate {
-    func habitDetailsViewControllerHabitDidEdited() {
-        guard let cell = collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? HabitCollectionCell,
-              let cellIndex = collectionView.indexPath(for: cell) else { return }
-        collectionView.deleteItems(at: [cellIndex])
+    func habitDetailsViewControllerHabitDidEdited(habitIndex: Int) {
+        let indexPath = IndexPath(item: habitIndex, section: 0)
+        collectionView.insertItems(at: [indexPath])
     }
 }
 
@@ -234,8 +226,8 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
     func habitDidPressedCheck(cell: HabitCollectionCell) {
         guard
             let indexPath = collectionView.indexPath(for: cell),
-            let progressCell = self.collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? ProgressCollectionCell
-//            let progressIndex = collectionView.indexPath(for: progressCell)
+            let progressCell = self.collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? ProgressCollectionCell,
+            let progressIndex = collectionView.indexPath(for: progressCell)
         else { return }
         
         let habitIndex = indexPath.row - 1
@@ -246,13 +238,6 @@ extension HabitsViewController: HabitCollectionViewCellDelegate {
             HabitsStore.shared.track(dataSourse[habitIndex])
         }
         
-        let progress = HabitsStore.shared.todayProgress
-        let percent = Int(progress * 100)
-        let config = ProgressCollectionCellConfig(percent: percent, progress: progress)
-        
-        progressCell.set(config: config)
-        
-//        collectionView.reloadItems(at: [progressIndex, indexPath])
-        collectionView.reloadData()
+        collectionView.reloadItems(at: [progressIndex, indexPath])
     }
 }

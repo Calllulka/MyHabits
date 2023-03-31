@@ -7,16 +7,14 @@
 
 import UIKit
 
-struct ProgressCollectionCellConfig {
-    let percent: Int
-    let progress: Float
-}
 
 final class ProgressCollectionCell: UICollectionViewCell {
     
 //    MARK: - Property
     
     static let reuseId = "ProgressCollectionViewCell"
+    
+    let progress = HabitsStore.shared.todayProgress
     
     private let status: UILabel = {
        let status = UILabel()
@@ -58,9 +56,9 @@ final class ProgressCollectionCell: UICollectionViewCell {
     
     //    MARK: - Functions
     
-    func set(config: ProgressCollectionCellConfig) {
-        percent.text = "\(config.percent)%"
-        progressView.progress = config.progress
+    func setProgress(progress: Float) {
+        percent.text = "\(Int(progress * 100))%"
+        progressView.progress = progress
     }
     
     private func prepareView(){

@@ -20,11 +20,16 @@ protocol HabitCollectionViewCellDelegate: AnyObject {
     func habitDidPressedCheck(cell: HabitCollectionCell)
 }
 
+protocol HabitCollectionViewCellChangeDelegate: AnyObject {
+    func habitDidChange(cell: HabitCollectionCell)
+}
+
 final class HabitCollectionCell: UICollectionViewCell {
     
     //    MARK: - Property
     
     weak var delegate: HabitCollectionViewCellDelegate?
+    weak var cellChenge: HabitCollectionViewCellChangeDelegate?
     
     static let reuseId = "HabitCollectionViewCell"
     
@@ -122,6 +127,7 @@ final class HabitCollectionCell: UICollectionViewCell {
         nameHabit.textColor = config.habitColor
         isChecked = config.habitIsChecked
         counter.text = "Счетчик: \(config.couner)"
+        self.cellChenge?.habitDidChange(cell: self)
     }
     
     @objc private func tapCheckMark() {

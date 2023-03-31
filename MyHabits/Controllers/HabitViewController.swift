@@ -13,8 +13,8 @@ enum HabitViewControllerType: Equatable {
 }
 
 protocol HabitViewControllerDelegate: AnyObject {
-    func habitViewControllerAddedOrEditedHabit()
-    func habitViewControllerDeleteHabit(habit: Habit)
+    func habitViewControllerAddedOrEditedHabit(habitIndex: Int)
+    func habitViewControllerDeleteHabit(habitIndex: Int)
 }
 
 final class HabitViewController: UIViewController {
@@ -113,6 +113,7 @@ final class HabitViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        navigationItem.largeTitleDisplayMode = .never
         prepareView()
         makeConstraints()
         configurateNavigationBar()
@@ -244,7 +245,8 @@ final class HabitViewController: UIViewController {
                              color: circle.backgroundColor ?? .orange)
         let store = HabitsStore.shared
         store.habits.append(newHabit)
-        delegate?.habitViewControllerAddedOrEditedHabit()
+        let index = store.habits.endIndex
+        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: index)
     }
     
     private func editHabit() {
@@ -258,7 +260,7 @@ final class HabitViewController: UIViewController {
         currentHabit.date = dataPicker.date
         currentHabit.name = addHabitName.text ?? "Текст не введен"
         HabitsStore.shared.habits[habitIndex] = currentHabit
-        delegate?.habitViewControllerAddedOrEditedHabit()
+        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: habitIndex)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -283,7 +285,7 @@ final class HabitViewController: UIViewController {
                 return
             }
             HabitsStore.shared.habits.remove(at: habitIndex)
-            self.delegate?.habitViewControllerDeleteHabit(habit: deleteHabit)
+            self.delegate?.habitViewControllerDeleteHabit(habitIndex: habitIndex)
             self.dismiss(animated: true, completion: nil)
         }
         alert.addAction(actionOne)

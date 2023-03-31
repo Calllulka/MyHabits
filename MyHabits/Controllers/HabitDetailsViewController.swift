@@ -8,7 +8,7 @@
 import UIKit
 
 protocol HabitDetailsViewControllerDelegate: AnyObject {
-    func habitDetailsViewControllerHabitDidEdited()
+    func habitDetailsViewControllerHabitDidEdited(habitIndex: Int)
 }
 
 final class HabitDetailsViewController: UIViewController {
@@ -50,10 +50,10 @@ final class HabitDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .myLightGray
-        navigationItem.largeTitleDisplayMode = .never
         addNavigationBar()
         prepareView()
         makeConstraints()
+        navigationItem.largeTitleDisplayMode = .never
     }
     
     //    MARK: - Functions
@@ -83,14 +83,14 @@ final class HabitDetailsViewController: UIViewController {
         
         NSLayoutConstraint.activate([
         
-            activity.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 22),
+            activity.topAnchor.constraint(equalTo: view.topAnchor, constant: 22),
             activity.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             activity.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 16),
             
             tableView.topAnchor.constraint(equalTo: activity.bottomAnchor, constant: 7),
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         
         ])
     }
@@ -153,13 +153,14 @@ extension HabitDetailsViewController: UITableViewDataSource, UITableViewDelegate
 
 extension HabitDetailsViewController: HabitViewControllerDelegate {
     
-    func habitViewControllerAddedOrEditedHabit() {
-        delegate?.habitDetailsViewControllerHabitDidEdited()
+    func habitViewControllerAddedOrEditedHabit(habitIndex: Int) {
+        delegate?.habitDetailsViewControllerHabitDidEdited(habitIndex: habitIndex)
+        self.navigationController?.popViewController(animated: true)
     }
     
-    func habitViewControllerDeleteHabit(habit: Habit) {
-        delegate?.habitDetailsViewControllerHabitDidEdited()
-        self.navigationController?.popViewController(animated: false)
+    func habitViewControllerDeleteHabit(habitIndex: Int) {
+        delegate?.habitDetailsViewControllerHabitDidEdited(habitIndex: habitIndex)
+        self.navigationController?.popViewController(animated: true)
     }
 }
 
