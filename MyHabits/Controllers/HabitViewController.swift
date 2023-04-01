@@ -17,6 +17,10 @@ protocol HabitViewControllerDelegate: AnyObject {
     func habitViewControllerDeleteHabit(habitIndex: Int)
 }
 
+extension HabitViewControllerDelegate {
+    func habitViewControllerDeleteHabit(habitIndex: Int) {}
+}
+
 final class HabitViewController: UIViewController {
     
     //    MARK: - Property
@@ -64,7 +68,7 @@ final class HabitViewController: UIViewController {
         return label
     }()
     
-    private var circle: UIButton = {
+    private lazy var circle: UIButton = {
         var circle = UIButton()
         circle.layer.cornerRadius = 15
         circle.backgroundColor = .orange
@@ -90,7 +94,7 @@ final class HabitViewController: UIViewController {
         return text
     }()
     
-    private var dataPicker: UIDatePicker = {
+    private lazy var dataPicker: UIDatePicker = {
         var picker = UIDatePicker()
         picker.datePickerMode = .time
         picker.preferredDatePickerStyle = UIDatePickerStyle.wheels
@@ -99,7 +103,7 @@ final class HabitViewController: UIViewController {
         return picker
     }()
     
-    private let habitDelete: UIButton = {
+    private lazy var habitDelete: UIButton = {
        var button = UIButton()
         button.setTitle("Удалить привычку", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -119,7 +123,14 @@ final class HabitViewController: UIViewController {
         configurateNavigationBar()
     }
     
-    //    MARK: - Functions
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touches.first != nil {
+            view.endEditing(true)
+        }
+        super.touchesBegan(touches, with: event)
+    }
+    
+    //    MARK: - Internal functions
     
     func configurate(type: HabitViewControllerType) {
         screenType = type
@@ -135,30 +146,7 @@ final class HabitViewController: UIViewController {
         }
     }
     
-    private func setHabit(habit: Habit) {
-        addHabitName.text = habit.name
-        dataPicker.date = habit.date
-        circle.backgroundColor = habit.color
-    }
-    
-    private func configurateNavigationBar() {
-        let rightButton = UIBarButtonItem(title: "Сохранить", style: .done, target: self, action: #selector(tapRightButtonSave))
-        rightButton.tintColor = .purple
-        let leftButton = UIBarButtonItem(title: "Отменить", style: .done, target: self, action: #selector(tapLeftBarButton))
-        leftButton.tintColor = .purple
-        leftButton.setTitleTextAttributes([NSAttributedString.Key.font: UIFont.body], for: .normal)
-        navigationItem.rightBarButtonItem = rightButton
-        navigationItem.leftBarButtonItem = leftButton
-    }
-    
-    @objc private func tapRightButtonSave() {
-        screenType == .create ? saveHabit(): editHabit()
-        dismiss(animated: true, completion: nil)
-    }
-    
-    @objc private func tapLeftBarButton() {
-        dismiss(animated: true, completion: nil)
-    }
+    //    MARK: - Private functions
     
     private func prepareView() {
         view.addSubview(scrollView)
@@ -174,7 +162,6 @@ final class HabitViewController: UIViewController {
     
     private func makeConstraints() {
         NSLayoutConstraint.activate([
-        
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -211,6 +198,66 @@ final class HabitViewController: UIViewController {
         ])
     }
     
+    private func setHabit(habit: Habit) {
+        addHabitName.text = habit.name
+        dataPicker.date = habit.date
+        circle.backgroundColor = habit.color
+    }
+    
+    private func configurateNavigationBar() {
+        let rightButton = UIBarButtonItem(title: "Сохранить", style: .done, target: self, action: #selector(tapRightButtonSave))
+        rightButton.tintColor = .purple
+        let leftButton = UIBarButtonItem(title: "Отменить", style: .done, target: self, action: #selector(tapLeftBarButton))
+        leftButton.tintColor = .purple
+        leftButton.setTitleTextAttributes([NSAttributedString.Key.font: UIFont.body], for: .normal)
+        navigationItem.rightBarButtonItem = rightButton
+        navigationItem.leftBarButtonItem = leftButton
+    }
+    
+    private func presentColorPicker() {
+        let colorPicker = UIColorPickerViewController()
+        colorPicker.delegate = self
+        colorPicker.selectedColor = habit?.color ?? .orange
+        colorPicker.title = "Выберите Цвет"
+        present(colorPicker, animated: true, completion: nil)
+    }
+    
+    private func saveHabit() {
+        let newHabit = Habit(name: addHabitName.text ?? "Текст не введен",
+                             date: dataPicker.date,
+                             color: circle.backgroundColor ?? .orange)
+        
+        let store = HabitsStore.shared
+        store.habits.append(newHabit)
+        let index = store.habits.endIndex
+        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: index)
+    }
+    
+    private func editHabit() {
+        guard let currentHabit = habit,
+              let habitIndex = HabitsStore.shared.habits.firstIndex(where: { $0 == currentHabit })
+        else {
+            return
+        }
+        currentHabit.color = circle.backgroundColor ?? .orange
+        currentHabit.date = dataPicker.date
+        currentHabit.name = addHabitName.text ?? "Текст не введен"
+        HabitsStore.shared.habits[habitIndex] = currentHabit
+        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: habitIndex)
+    }
+    
+    //    MARK: - Actions
+    
+    @objc private func tapRightButtonSave() {
+        dismiss(animated: true) { [weak self] in
+            self?.screenType == .create ? self?.saveHabit(): self?.editHabit()
+        }
+    }
+    
+    @objc private func tapLeftBarButton() {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc private func date(paramdatePicker: UIDatePicker) {
         
         if paramdatePicker.isEqual(self.dataPicker) {
@@ -230,64 +277,30 @@ final class HabitViewController: UIViewController {
     @objc private func openColor() {
         presentColorPicker()
     }
-    
-    private func presentColorPicker() {
-        let colorPicker = UIColorPickerViewController()
-        colorPicker.delegate = self
-        colorPicker.selectedColor = .orange
-        colorPicker.title = "Выберите Цвет"
-        present(colorPicker, animated: true, completion: nil)
-    }
-    
-    private func saveHabit() {
-        let newHabit = Habit(name: addHabitName.text ?? "Текст не введен",
-                             date: dataPicker.date,
-                             color: circle.backgroundColor ?? .orange)
-        let store = HabitsStore.shared
-        store.habits.append(newHabit)
-        let index = store.habits.endIndex
-        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: index)
-    }
-    
-    private func editHabit() {
-        
-        guard let currentHabit = habit,
-              let habitIndex = HabitsStore.shared.habits.firstIndex(where: { $0 == currentHabit })
-        else {
-            return
-        }
-        currentHabit.color = circle.backgroundColor ?? .orange
-        currentHabit.date = dataPicker.date
-        currentHabit.name = addHabitName.text ?? "Текст не введен"
-        HabitsStore.shared.habits[habitIndex] = currentHabit
-        delegate?.habitViewControllerAddedOrEditedHabit(habitIndex: habitIndex)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if touches.first != nil {
-            view.endEditing(true)
-        }
-        super.touchesBegan(touches, with: event)
-    }
-    
+
     @objc func deleteHabit() {
         let alertText = "Вы хотите удалить привычку \"\(habit?.name ?? "")\"?"
-        let alert = UIAlertController(title: "Удалить привычку", message: alertText, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Удалить привычку",
+                                      message: alertText,
+                                      preferredStyle: .alert)
         
-        let actionOne = UIAlertAction(title: "Отмена", style: .cancel) {_ in
+        let actionOne = UIAlertAction(title: "Отмена", style: .cancel) { _ in
             alert.dismiss(animated: true, completion: nil)
         }
         
-        let actionTwo = UIAlertAction(title: "Удалить", style: .destructive) {_ in
+        let actionTwo = UIAlertAction(title: "Удалить", style: .destructive) { _ in
             guard let deleteHabit = self.habit,
                   let habitIndex = HabitsStore.shared.habits.firstIndex(where: { $0 == deleteHabit })
             else {
                 return
             }
+            
             HabitsStore.shared.habits.remove(at: habitIndex)
-            self.delegate?.habitViewControllerDeleteHabit(habitIndex: habitIndex)
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: false) { [weak self] in
+                self?.delegate?.habitViewControllerDeleteHabit(habitIndex: habitIndex)
+            }
         }
+        
         alert.addAction(actionOne)
         alert.addAction(actionTwo)
         
@@ -298,8 +311,7 @@ final class HabitViewController: UIViewController {
 //    MARK: - Extension
 
 extension HabitViewController: UIColorPickerViewControllerDelegate {
-    
-    internal func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
+    func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
         circle.backgroundColor = viewController.selectedColor
     }
 }
@@ -310,4 +322,3 @@ extension HabitViewController: UITextFieldDelegate {
         return true
     }
 }
-

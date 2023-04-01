@@ -31,7 +31,7 @@ final class TableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(label)
+        prepareView()
         addConstraints()
     }
 
@@ -39,17 +39,7 @@ final class TableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //    MARK: - Functions
-    
-    private func addConstraints() {
-        
-        NSLayoutConstraint.activate([
-            
-            label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
-            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -11)
-        ])
-    }
+    //    MARK: - Public functions
     
     func set(config: TableViewCellConfig) {
         label.text = config.dateText
@@ -57,5 +47,19 @@ final class TableViewCell: UITableViewCell {
             accessoryView = UIImageView(image: UIImage(systemName: "checkmark"))
             accessoryView?.tintColor = .purple
         }
+    }
+    
+    //    MARK: - Private functions
+    
+    private func prepareView() {
+        contentView.addSubview(label)
+    }
+    
+    private func addConstraints() {
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -11)
+        ])
     }
 }

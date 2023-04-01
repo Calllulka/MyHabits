@@ -20,16 +20,11 @@ protocol HabitCollectionViewCellDelegate: AnyObject {
     func habitDidPressedCheck(cell: HabitCollectionCell)
 }
 
-protocol HabitCollectionViewCellChangeDelegate: AnyObject {
-    func habitDidChange(cell: HabitCollectionCell)
-}
-
 final class HabitCollectionCell: UICollectionViewCell {
     
     //    MARK: - Property
     
     weak var delegate: HabitCollectionViewCellDelegate?
-    weak var cellChenge: HabitCollectionViewCellChangeDelegate?
     
     static let reuseId = "HabitCollectionViewCell"
     
@@ -87,7 +82,18 @@ final class HabitCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //    MARK: - Functions
+    //    MARK: - Internal functions
+    
+    func set(config: HabitCollectionCellConfig) {
+        nameHabit.text = config.habitName
+        timeHabit.text = config.habitTime
+        checkMark.tintColor = config.habitColor
+        nameHabit.textColor = config.habitColor
+        isChecked = config.habitIsChecked
+        counter.text = "Счетчик: \(config.couner)"
+    }
+    
+    //    MARK: - Private functions
     
     private func prepareView() {
         contentView.backgroundColor = .white
@@ -119,16 +125,8 @@ final class HabitCollectionCell: UICollectionViewCell {
             
         ])
     }
-    
-    func set(config: HabitCollectionCellConfig) {
-        nameHabit.text = config.habitName
-        timeHabit.text = config.habitTime
-        checkMark.tintColor = config.habitColor
-        nameHabit.textColor = config.habitColor
-        isChecked = config.habitIsChecked
-        counter.text = "Счетчик: \(config.couner)"
-        self.cellChenge?.habitDidChange(cell: self)
-    }
+
+    //MARK: - Actions
     
     @objc private func tapCheckMark() {
         self.delegate?.habitDidPressedCheck(cell: self)

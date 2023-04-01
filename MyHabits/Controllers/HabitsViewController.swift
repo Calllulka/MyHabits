@@ -34,9 +34,9 @@ final class HabitsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupView()
+        addNavBarButton()
         prepareView()
-        setupLayouts()
+        makeConstraints()
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
@@ -55,12 +55,27 @@ final class HabitsViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
     
-    //    MARK: - Functions
+    //    MARK: - Private functions
     
-    private func setupView() {
+    private func addNavBarButton() {
         let barButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(actionBarbutton))
         barButton.tintColor = .purple
         navigationItem.rightBarButtonItem = barButton
+    }
+        
+    private func prepareView() {
+        view.addSubview(collectionView)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+    }
+    
+    private func makeConstraints() {
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
     }
     
     @objc private func actionBarbutton() {
@@ -70,22 +85,6 @@ final class HabitsViewController: UIViewController {
         modalNavigationController.modalPresentationStyle = .fullScreen
         habitViewController.delegate = self
         navigationController?.present(modalNavigationController, animated: true)
-    }
-    
-    private func prepareView() {
-        view.addSubview(collectionView)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-    }
-    
-    private func setupLayouts() {
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
-        ])
     }
 }
 
@@ -111,22 +110,19 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
             }
             
             let habit = dataSourse[indexPath.row - 1]
-            
-            var counter: Int = 0
-            habit.trackDates.forEach { date in
-               counter += HabitsStore.shared.habit(habit, isTrackedIn: date) ? 1 : 0
-            }
+            let trackedHabitCount = habit.trackDates.filter {
+                HabitsStore.shared.habit(habit, isTrackedIn: $0)
+            }.count
             
             let config = HabitCollectionCellConfig(habit: habit,
                                                    habitName: habit.name,
                                                    habitTime: habit.dateString,
                                                    habitColor: habit.color,
                                                    habitIsChecked: habit.isAlreadyTakenToday,
-                                                   couner: counter)
+                                                   couner: trackedHabitCount)
             
             cell.set(config: config)
             cell.delegate = self
-//            cell.cellChenge = self
             return cell
         }
     }
@@ -143,101 +139,52 @@ extension HabitsViewController: UICollectionViewDataSource, UICollectionViewDele
 }
 
 extension HabitsViewController: UICollectionViewDelegateFlowLayout {
-    
-    private func itemWidth(
-        for width: CGFloat,
-        spacing: CGFloat
-    ) -> CGFloat {
-        let itemsInRow: CGFloat = 1
-        
-        let finalWidth = (width - 33) / itemsInRow
-        
-        return finalWidth
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = view.frame.width - 33
+        let height = CGFloat(indexPath.row == 0 ? 60 : 130)
+        return CGSize(width: width, height: height)
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
-    ) -> CGSize {
-        if indexPath.row == 0 {
-            let width = itemWidth(
-                for: view.frame.width,
-                spacing: 33
-            )
-            let height = CGFloat(60)
-            
-            return CGSize(width: width, height: height)
-        } else {
-            let width = itemWidth(
-                for: view.frame.width,
-                spacing: 33
-            )
-            let height = CGFloat(130)
-            
-            return CGSize(width: width, height: height)
-        }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .init(top: 22, left: 16, bottom: 16, right: 16)
     }
     
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        insetForSectionAt section: Int
-    ) -> UIEdgeInsets {
-        UIEdgeInsets(
-            top: CGFloat(22),
-            left: CGFloat(16),
-            bottom: CGFloat(18),
-            right: CGFloat(17)
-        )
-    }
-    
-    func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        minimumLineSpacingForSectionAt section: Int
-    ) -> CGFloat {
-        12
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 12
     }
 }
 
 extension HabitsViewController: HabitViewControllerDelegate {
-    
     func habitViewControllerAddedOrEditedHabit(habitIndex: Int) {
         let indexPath = IndexPath(item: habitIndex, section: 0)
         collectionView.insertItems(at: [indexPath])
-    }
-
-    func habitViewControllerDeleteHabit(habitIndex: Int) {
-        let indexPath = IndexPath(item: habitIndex, section: 0)
-        collectionView.deleteItems(at: [indexPath])
     }
 }
 
 extension HabitsViewController: HabitDetailsViewControllerDelegate {
     func habitDetailsViewControllerHabitDidEdited(habitIndex: Int) {
-        let indexPath = IndexPath(item: habitIndex, section: 0)
-        collectionView.insertItems(at: [indexPath])
+        let indexPath = IndexPath(row: habitIndex + 1, section: 0)
+        collectionView.reloadItems(at: [indexPath])
+    }
+    
+    func habitDetailsViewControllerHabitDidDeleted(habitIndex: Int) {
+        let indexPath = IndexPath(item: habitIndex + 1, section: 0)
+        collectionView.deleteItems(at: [indexPath])
     }
 }
 
 extension HabitsViewController: HabitCollectionViewCellDelegate {
-    
     func habitDidPressedCheck(cell: HabitCollectionCell) {
-        guard
-            let indexPath = collectionView.indexPath(for: cell),
-            let progressCell = self.collectionView.cellForItem(at: IndexPath(row: 0, section: 0)) as? ProgressCollectionCell,
-            let progressIndex = collectionView.indexPath(for: progressCell)
-        else { return }
-        
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
         let habitIndex = indexPath.row - 1
-        
+
         if dataSourse[habitIndex].isAlreadyTakenToday {
             dataSourse[habitIndex].trackDates.removeLast()
         } else {
             HabitsStore.shared.track(dataSourse[habitIndex])
         }
         
-        collectionView.reloadItems(at: [progressIndex, indexPath])
+        let progressIndexPath = IndexPath(row: 0, section: 0)
+        collectionView.reloadItems(at: [progressIndexPath, indexPath])
     }
 }

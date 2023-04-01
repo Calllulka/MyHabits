@@ -9,7 +9,7 @@ import UIKit
 
 final class InfoViewController: UIViewController {
     
-    //    MARK: - Property
+    //MARK: - Private property
     
     private let scrollView: UIScrollView = {
         let scroll = UIScrollView()
@@ -96,9 +96,9 @@ final class InfoViewController: UIViewController {
         makeConstraints()
     }
     
-    //    MARK: - Functions
+    //    MARK: - Private functions
     
-    func prepareView() {
+    private func prepareView() {
         view.addSubview(scrollView)
         scrollView.addSubview(textInfo)
         scrollView.addSubview(oneText)
@@ -110,7 +110,7 @@ final class InfoViewController: UIViewController {
         scrollView.addSubview(sevenText)
     }
     
-    func makeConstraints() {
+    private func makeConstraints() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -149,7 +149,6 @@ final class InfoViewController: UIViewController {
             sevenText.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             sevenText.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32),
             sevenText.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
-            
         ])
     }
 }

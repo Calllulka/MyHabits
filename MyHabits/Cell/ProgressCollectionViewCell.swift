@@ -54,12 +54,14 @@ final class ProgressCollectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //    MARK: - Functions
+    //    MARK: - Public functions
     
     func setProgress(progress: Float) {
         percent.text = "\(Int(progress * 100))%"
         progressView.progress = progress
     }
+    
+    //    MARK: - Private functions
     
     private func prepareView(){
         contentView.addSubview(status)
@@ -70,9 +72,7 @@ final class ProgressCollectionCell: UICollectionViewCell {
     }
     
     private func makeConstraint(){
-        
         NSLayoutConstraint.activate([
-            
             status.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             status.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
            
